@@ -87,17 +87,17 @@ class NewsPost extends StatelessWidget {
                 ),
               ),
             ),
-            post.imageUrl != null
-                ? Container(
-                    key: const Key('postParentContainer'),
-                    height: 340,
-                    color: Colors.white,
-                    child: PostContainer(photoUrl: post.imageUrl),
-                  )
-                : DescriptionTextWidget(text: post.description!),
+            // post.imageUrl != null
+            //     ? Container(
+            //         key: const Key('postParentContainer'),
+            //         height: 340,
+            //         color: Colors.white,
+            //         // child: PostContainer(photoUrl: post.imageUrl),
+            //       )
+            //     : DescriptionTextWidget(text: post.caption!),
             BaseView<LikeButtonViewModel>(
               onModelReady: (model) {
-                model.initialize(post.likedBy ?? [], post.sId);
+                // model.initialize(post.likedBy ?? [], post.sId);
               },
               builder: (context, model, child) => Column(
                 children: [
@@ -113,14 +113,14 @@ class NewsPost extends StatelessWidget {
                               MultiReactButton(
                                 toggle: () => model.toggleIsLiked(),
                               ),
-                              Text(
-                                "${model.likedBy.length}",
-                                style: TextStyle(
-                                  fontFamily: 'open-sans',
-                                  color:
-                                      Theme.of(context).colorScheme.onSecondary,
-                                ),
-                              ),
+                              // Text(
+                              //   "${model.likedBy.length}",
+                              //   style: TextStyle(
+                              //     fontFamily: 'open-sans',
+                              //     color:
+                              //         Theme.of(context).colorScheme.onSecondary,
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -146,7 +146,7 @@ class NewsPost extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "${post.comments!.length}",
+                                "${post.caption!.length}",
                                 style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.onSecondary,
@@ -197,8 +197,8 @@ class NewsPost extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (post.imageUrl != null)
-                          DescriptionTextWidget(text: post.description!),
+                        // if (post.imageUrl != null)
+                        //   DescriptionTextWidget(text: post.description!),
                       ],
                     ),
                   ),

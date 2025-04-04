@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:talawa/constants/app_strings.dart';
 import 'package:talawa/enums/enums.dart';
 import 'package:talawa/locator.dart';
@@ -28,13 +29,12 @@ class AddPostViewModel extends BaseModel {
   late MultiMediaPickerService _multiMediaPickerService;
   late NavigationService _navigationService;
   late ImageService _imageService;
-
+  late String? _imageHash;
   late File? _imageFile;
   late String? _imageInBase64;
   late OrgInfo _selectedOrg;
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _textHashTagController = TextEditingController();
-  final TextEditingController _titleController = TextEditingController();
 
   /// Whether the app is running in Demo Mode.
   late bool demoMode;
@@ -62,6 +62,9 @@ class AddPostViewModel extends BaseModel {
 
   /// Getter to access the base64 type.
   String? get imageInBase64 => _imageInBase64;
+
+  /// Getter to access the image hash.
+  String? get imageHash => _imageHash;
 
   /// Method to set Image in Bsse64.
   ///
@@ -91,11 +94,9 @@ class AddPostViewModel extends BaseModel {
   /// The main text controller of the hashtag.
   TextEditingController get textHashTagController => _textHashTagController;
 
-  /// The text controller of the title body.
-  TextEditingController get titleController => _titleController;
   late DataBaseMutationFunctions _dbFunctions;
 
-  /// This function is usedto do initialisation of stuff in the view model.
+  /// This function is used to do initialisation of stuff in the view model.
   ///
   /// **params**:
   ///   None
@@ -106,6 +107,7 @@ class AddPostViewModel extends BaseModel {
     _navigationService = locator<NavigationService>();
     _imageFile = null;
     _imageInBase64 = null;
+    _imageHash = null;
     _multiMediaPickerService = locator<MultiMediaPickerService>();
     _imageService = locator<ImageService>();
     if (!demoMode) {
@@ -129,6 +131,7 @@ class AddPostViewModel extends BaseModel {
     // convertImageToBase64(image!.path);
     if (image != null) {
       _imageFile = image;
+      _imageHash = await _imageService.calculateFileHash(image);
       // convertImageToBase64(image.path);
       _imageInBase64 = await _imageService.convertToBase64(image);
       // print(_imageInBase64);
@@ -152,18 +155,68 @@ class AddPostViewModel extends BaseModel {
       actionType: ActionType.critical,
       criticalActionFailureMessage: TalawaErrors.postCreationFailed,
       action: () async {
-        final variables = {
-          "text": "${_controller.text} #${_textHashTagController.text}",
-          "organizationId": _selectedOrg.id,
-          "title": _titleController.text,
-          if (_imageFile != null)
-            "file": 'data:image/png;base64,${_imageInBase64!}',
-        };
+        String? imageUrl;
         navigationService.pushDialog(
           const CustomProgressDialog(
             key: Key('addPostProgress'),
           ),
         );
+        // Handle image upload if an image is selected
+        if (_imageFile != null && _imageHash != null) {
+          final presignedUrlResponse = await _imageService.generatePresignedUrl(
+            fileName: _imageFile!.path.split('/').last,
+            fileHash: _imageHash!,
+            organizationId: _selectedOrg.id!,
+          );
+
+          if (presignedUrlResponse != null) {
+            imageUrl = presignedUrlResponse['objectName'] as String;
+
+            // Only upload if the file doesn't already exist
+            if (presignedUrlResponse['requiresUpload'] == true) {
+              final presignedUrl = presignedUrlResponse['presignedUrl'] as String;
+              try {
+                // Upload file using PUT request
+                final fileBytes = await _imageFile!.readAsBytes();
+                final response = await http.put(
+                  Uri.parse(presignedUrl),
+                  body: fileBytes,
+                  headers: {
+                    'Content-Type': 'application/octet-stream',
+                  },
+                );
+
+                if (response.statusCode != 200) {
+                  print('File upload failed with status: ${response.statusCode}');
+                  print('Response body: ${response.body}');
+                  throw Exception('Failed to upload file: ${response.statusCode}');
+                }
+              } catch (e) {
+                print('Error uploading file: $e');
+                rethrow; // Re-throw the error to be handled by the action handler
+              }
+            }
+          }
+        }
+
+        final variables = {
+          "caption": _controller.text +
+              (_textHashTagController.text.isNotEmpty
+                  ? " ${_textHashTagController.text}"
+                  : ""),
+          "organizationId": _selectedOrg.id!,
+          "attachments": imageUrl != null
+              ? [
+                  {
+                    "fileHash": _imageHash!,
+                    "mimetype": imageService.getMimeType(_imageFile!.path.split('/').last),
+                    "name": _imageFile!.path.split('/').last,
+                    "objectName": imageUrl,
+                  }
+                ]
+              : [], // Send empty array when imageUrl is null
+        };
+        print(variables);
         final result = await _dbFunctions.gqlAuthMutation(
           PostQueries().uploadPost(),
           variables: variables,
@@ -193,7 +246,7 @@ class AddPostViewModel extends BaseModel {
       onActionFinally: () async {
         removeImage();
         _controller.text = "";
-        _titleController.text = "";
+        _textHashTagController.text = "";
         notifyListeners();
       },
     );

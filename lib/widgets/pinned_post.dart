@@ -51,9 +51,9 @@ class PinnedPost extends StatelessWidget {
                             child: CachedNetworkImage(
                               cacheKey: pinnedPost[index].sId,
                               imageUrl:
-                                  (pinnedPost[index].imageUrl ?? '').isEmpty
-                                      ? 'placeHolderUrl'
-                                      : pinnedPost[index].imageUrl!,
+                                  
+                                      'placeHolderUrl'
+                                     ,
                               errorWidget: (context, url, error) {
                                 print(error);
                                 return const SizedBox(
@@ -89,7 +89,7 @@ class PinnedPost extends StatelessWidget {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            pinnedPost[index].description!,
+                            pinnedPost[index].caption!,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -130,9 +130,9 @@ class PinnedPost extends StatelessWidget {
   /// * `Map<String, String>`: returns a map
   Map<String, String> toMap(int index) {
     return {
-      'title': this.pinnedPost[index].description!,
+      'title': this.pinnedPost[index].caption!,
       'postId': this.pinnedPost[index].sId,
-      'imageUrl': this.pinnedPost[index].imageUrl!,
+      // 'imageUrl': this.pinnedPost[index].imageUrl!,
       'time': getTimeDifferenceInHours(
         this.pinnedPost[index].createdAt!.toIso8601String(),
       ),

@@ -23,7 +23,7 @@ class CacheService {
   /// static graphql result when device is offline.
   static final QueryResult offlineResult = QueryResult(
     options: QueryOptions(
-      document: gql(PostQueries().addLike()),
+      document: gql(PostQueries().addPostVote()),
     ),
     data: {
       'cached': true,

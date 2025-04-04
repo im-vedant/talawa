@@ -134,9 +134,9 @@ class CustomCarouselScrollerState extends State<CustomCarouselScroller> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  widget.pinnedPosts[pindex].description!.length > 90
-                      ? "${widget.pinnedPosts[pindex].description!.substring(0, 90)}..."
-                      : widget.pinnedPosts[pindex].description!,
+                  widget.pinnedPosts[pindex].caption!.length > 90
+                      ? "${widget.pinnedPosts[pindex].caption!.substring(0, 90)}..."
+                      : widget.pinnedPosts[pindex].caption!,
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!

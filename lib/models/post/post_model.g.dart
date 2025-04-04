@@ -18,41 +18,56 @@ class PostAdapter extends TypeAdapter<Post> {
     };
     return Post(
       sId: fields[0] as String,
-      description: fields[1] as String?,
+      caption: fields[1] as String?,
       createdAt: fields[2] as DateTime?,
-      imageUrl: fields[3] as String?,
-      base64String: fields[4] as String?,
-      videoUrl: fields[5] as String?,
-      creator: fields[6] as User?,
-      organization: fields[7] as OrgInfo?,
-      likedBy: (fields[8] as List?)?.cast<LikedBy>(),
-      comments: (fields[9] as List?)?.cast<Comments>(),
+      creator: fields[3] as User?,
+      organization: fields[4] as OrgInfo?,
+      attachments: (fields[5] as List?)?.cast<PostAttachment>(),
+      updater: fields[6] as User?,
+      commentsCount: fields[7] as int?,
+      downVotesCount: fields[8] as int?,
+      upVotesCount: fields[9] as int?,
+      pinnedAt: fields[10] as DateTime?,
+      updatedAt: fields[11] as DateTime?,
+      comments: fields[14] as PostCommentsConnection?,
+      downVoters: fields[12] as PostDownVotersConnection?,
+      upVoters: fields[13] as PostUpVotersConnection?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Post obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.sId)
       ..writeByte(1)
-      ..write(obj.description)
+      ..write(obj.caption)
       ..writeByte(2)
       ..write(obj.createdAt)
       ..writeByte(3)
-      ..write(obj.imageUrl)
-      ..writeByte(4)
-      ..write(obj.base64String)
-      ..writeByte(5)
-      ..write(obj.videoUrl)
-      ..writeByte(6)
       ..write(obj.creator)
-      ..writeByte(7)
+      ..writeByte(4)
       ..write(obj.organization)
+      ..writeByte(5)
+      ..write(obj.attachments)
+      ..writeByte(6)
+      ..write(obj.updater)
+      ..writeByte(7)
+      ..write(obj.commentsCount)
       ..writeByte(8)
-      ..write(obj.likedBy)
+      ..write(obj.downVotesCount)
       ..writeByte(9)
+      ..write(obj.upVotesCount)
+      ..writeByte(10)
+      ..write(obj.pinnedAt)
+      ..writeByte(11)
+      ..write(obj.updatedAt)
+      ..writeByte(12)
+      ..write(obj.downVoters)
+      ..writeByte(13)
+      ..write(obj.upVoters)
+      ..writeByte(14)
       ..write(obj.comments);
   }
 
@@ -67,27 +82,31 @@ class PostAdapter extends TypeAdapter<Post> {
           typeId == other.typeId;
 }
 
-class LikedByAdapter extends TypeAdapter<LikedBy> {
+class PostDownVotersConnectionAdapter
+    extends TypeAdapter<PostDownVotersConnection> {
   @override
-  final int typeId = 8;
+  final int typeId = 7;
 
   @override
-  LikedBy read(BinaryReader reader) {
+  PostDownVotersConnection read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return LikedBy(
-      sId: fields[0] as String?,
+    return PostDownVotersConnection(
+      pageInfo: fields[1] as PageInfo,
+      edges: (fields[0] as List?)?.cast<PostDownVotersConnectionEdge>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, LikedBy obj) {
+  void write(BinaryWriter writer, PostDownVotersConnection obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.sId);
+      ..write(obj.edges)
+      ..writeByte(1)
+      ..write(obj.pageInfo);
   }
 
   @override
@@ -96,32 +115,36 @@ class LikedByAdapter extends TypeAdapter<LikedBy> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LikedByAdapter &&
+      other is PostDownVotersConnectionAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
 
-class CommentsAdapter extends TypeAdapter<Comments> {
+class PostDownVotersConnectionEdgeAdapter
+    extends TypeAdapter<PostDownVotersConnectionEdge> {
   @override
-  final int typeId = 9;
+  final int typeId = 8;
 
   @override
-  Comments read(BinaryReader reader) {
+  PostDownVotersConnectionEdge read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Comments(
-      sId: fields[0] as String?,
+    return PostDownVotersConnectionEdge(
+      cursor: fields[0] as String,
+      node: fields[1] as User?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Comments obj) {
+  void write(BinaryWriter writer, PostDownVotersConnectionEdge obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.sId);
+      ..write(obj.cursor)
+      ..writeByte(1)
+      ..write(obj.node);
   }
 
   @override
@@ -130,7 +153,257 @@ class CommentsAdapter extends TypeAdapter<Comments> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CommentsAdapter &&
+      other is PostDownVotersConnectionEdgeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PostUpVotersConnectionAdapter
+    extends TypeAdapter<PostUpVotersConnection> {
+  @override
+  final int typeId = 10;
+
+  @override
+  PostUpVotersConnection read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PostUpVotersConnection(
+      pageInfo: fields[1] as PageInfo,
+      edges: (fields[0] as List?)?.cast<PostUpVotersConnectionEdge>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PostUpVotersConnection obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.edges)
+      ..writeByte(1)
+      ..write(obj.pageInfo);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PostUpVotersConnectionAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PostUpVotersConnectionEdgeAdapter
+    extends TypeAdapter<PostUpVotersConnectionEdge> {
+  @override
+  final int typeId = 11;
+
+  @override
+  PostUpVotersConnectionEdge read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PostUpVotersConnectionEdge(
+      cursor: fields[0] as String,
+      node: fields[1] as User?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PostUpVotersConnectionEdge obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.cursor)
+      ..writeByte(1)
+      ..write(obj.node);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PostUpVotersConnectionEdgeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PostCommentsConnectionAdapter
+    extends TypeAdapter<PostCommentsConnection> {
+  @override
+  final int typeId = 12;
+
+  @override
+  PostCommentsConnection read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PostCommentsConnection(
+      pageInfo: fields[1] as PageInfo,
+      edges: (fields[0] as List?)?.cast<PostCommentsConnectionEdge>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PostCommentsConnection obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.edges)
+      ..writeByte(1)
+      ..write(obj.pageInfo);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PostCommentsConnectionAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PostCommentsConnectionEdgeAdapter
+    extends TypeAdapter<PostCommentsConnectionEdge> {
+  @override
+  final int typeId = 13;
+
+  @override
+  PostCommentsConnectionEdge read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PostCommentsConnectionEdge(
+      cursor: fields[0] as String,
+      node: fields[1] as PostComment?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PostCommentsConnectionEdge obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.cursor)
+      ..writeByte(1)
+      ..write(obj.node);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PostCommentsConnectionEdgeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PostCommentAdapter extends TypeAdapter<PostComment> {
+  @override
+  final int typeId = 14;
+
+  @override
+  PostComment read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PostComment(
+      id: fields[0] as String,
+      text: fields[1] as String,
+      createdAt: fields[2] as DateTime,
+      creator: fields[4] as User,
+      updatedAt: fields[3] as DateTime?,
+      upVotesCount: fields[5] as int,
+      downVotesCount: fields[6] as int,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PostComment obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.text)
+      ..writeByte(2)
+      ..write(obj.createdAt)
+      ..writeByte(3)
+      ..write(obj.updatedAt)
+      ..writeByte(4)
+      ..write(obj.creator)
+      ..writeByte(5)
+      ..write(obj.upVotesCount)
+      ..writeByte(6)
+      ..write(obj.downVotesCount);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PostCommentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PostAttachmentAdapter extends TypeAdapter<PostAttachment> {
+  @override
+  final int typeId = 9;
+
+  @override
+  PostAttachment read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PostAttachment(
+      fileHash: fields[0] as String,
+      id: fields[1] as String,
+      mimeType: fields[2] as String?,
+      name: fields[3] as String,
+      objectName: fields[4] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PostAttachment obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(0)
+      ..write(obj.fileHash)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.mimeType)
+      ..writeByte(3)
+      ..write(obj.name)
+      ..writeByte(4)
+      ..write(obj.objectName);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PostAttachmentAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

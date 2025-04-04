@@ -111,40 +111,97 @@ class PostQueries {
 """;
   }
 
-  /// Add Like to a post.
+  /// Add Post Vote to a post.
   ///
   /// **params**:
   ///   None
   ///
   /// **returns**:
-  /// * `String`: The query related to addingLike
-  String addLike() {
+  /// * `String`: The query related to addingPostVote
+  String addPostVote() {
     return """
-     mutation likePost(\$postID: ID!) { 
-      likePost( id: \$postID,)
+     mutation addPostVote(\$postID: ID!, \$type: PostVoteType!) { 
+      createPostVote( input : {
+        postId: \$postID,
+        type: \$type
+      })
       {
-        _id
+      id
+      caption
+      createdAt
+      pinnedAt
+      updater{
+      id
+      }
+      updatedAt
+      upVotesCount
+      downVotesCount
+      commentsCount
+      creator{
+      id
+      }
+      organization{
+      id
+      }
+      attachments{
+      id
+      fileHash
+      mimeType
+      name
+      objectName
+      }
+       pinnedAt
+      updater{
+      id
+      }
       }
     }
   """;
   }
 
-  /// Remove Like from a post.
+  /// Remove Post Vote from a post.
   ///
   /// **params**:
   ///   None
   ///
   /// **returns**:
-  /// * `String`: The query related to removingLike
-  String removeLike() {
+  /// * `String`: The query related to removingPostVote
+  String removePostVote() {
     return """
-     mutation unlikePost(\$postID: ID!) { 
-      unlikePost( id: \$postID,)
+     mutation deletePostVote(\$postID: ID!, \$creatorID: ID!) { 
+      deletePostVote( input : {
+        postId: \$postID,
+        creatorId: \$creatorID
+      })
       {
-        _id
-        likedBy{
-        _id
-        }
+      id
+      caption
+      createdAt
+      pinnedAt
+      updater{
+      id
+      }
+      updatedAt
+      upVotesCount
+      downVotesCount
+      commentsCount
+      creator{
+      id
+      }
+      organization{
+      id
+      }
+      attachments{
+      id
+      fileHash
+      mimeType
+      name
+      objectName
+      }
+       pinnedAt
+      updater{
+      id
+      }
       }
     }
   """;
@@ -159,47 +216,46 @@ class PostQueries {
   /// * `String`: The query related to uploadingPost.
   String uploadPost() {
     return '''
-    mutation CreatePost(
-    \$text: String!
-    \$title: String!
-    \$imageUrl: URL
-    \$videoUrl: URL
+    mutation createPost(
+    \$caption: String!
     \$organizationId: ID!
-    \$file: String
+    \$isPinned: Boolean
+    \$attachments : [FileMetadataInput!]!
   ) {
     createPost(
-      data: {
-        text: \$text
-        title: \$title
-        imageUrl: \$imageUrl
-        videoUrl: \$videoUrl
+      input: {
+        caption: \$caption
         organizationId: \$organizationId
+        isPinned: \$isPinned
+        attachments: \$attachments
       }
-      file: \$file
     ) {
-      _id
-      text
+      id
+      caption
       createdAt
-      imageUrl
-      videoUrl
-      title
-      commentCount
-      likeCount
+      pinnedAt
       creator{
-        _id
-        firstName
-        lastName
-        image
+      id
       }
       organization{
-        _id
+      id
       }
-      likedBy{
-        _id
+      attachments{
+      id
+      fileHash
+      mimeType
+      name
+      objectName
       }
-      comments{
-        _id
-          }
+      pinnedAt
+      updater{
+      id
+      }
+      updatedAt
+      upVotesCount
+      downVotesCount
+      commentsCount
+
     }
   }
     ''';
@@ -222,4 +278,42 @@ class PostQueries {
     }
     ''';
   }
+
+  /// Creates a presigned URL for file upload.
+  ///
+  /// **params**:
+  ///   None
+  ///
+  /// **returns**:
+  /// * `String`: The mutation for creating a presigned URL
+  /// 
+  /// The mutation accepts:
+  /// * `fileHash`: SHA-256 hash of the file for deduplication
+  /// * `fileName`: Name of the file to be uploaded
+  /// * `objectName`: Optional custom object name
+  /// * `organizationId`: ID of the organization
+  String createPresignedUrl() {
+    return '''
+    mutation CreatePresignedUrl(
+      \$fileHash: String!,
+      \$fileName: String!,
+      \$objectName: String,
+      \$organizationId: ID!
+    ) {
+      createPresignedUrl(
+        input :{
+        fileHash: \$fileHash,
+        fileName: \$fileName,
+        objectName: \$objectName,
+        organizationId: \$organizationId
+        }
+      ) {
+        objectName
+        presignedUrl
+        requiresUpload
+      }
+    }
+    ''';
+  }
+
 }

@@ -113,14 +113,14 @@ class _IndividualPostViewState extends State<IndividualPostView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // renders the number of users liked the post.
-                IndividualPageLikeSection(
-                  usersLiked: widget.post.likedBy!,
-                ),
+                // IndividualPageLikeSection(
+                //   usersLiked: widget.post.likedBy!,
+                // ),
                 // renders the number of users commented on the post.
-                IndividualPostCommentSection(
-                  comments: widget.post.comments!,
-                  postID: widget.post.sId,
-                ),
+                // IndividualPostCommentSection(
+                //   // comments: widget.post.comments!,
+                //   postID: widget.post.sId,
+                // ),
                 const SizedBox(
                   height: 200,
                 ),
@@ -155,11 +155,11 @@ Padding buildPadding(BuildContext context, String text) {
 class IndividualPageLikeSection extends StatelessWidget {
   const IndividualPageLikeSection({
     super.key,
-    required this.usersLiked,
+    // required this.usersLiked,
   });
 
   /// Represents a list of users who have liked a post.
-  final List<LikedBy> usersLiked;
+  // final List<LikedBy> usersLiked;
 
   @override
   Widget build(BuildContext context) {
@@ -175,9 +175,9 @@ class IndividualPageLikeSection extends StatelessWidget {
         Row(
           children: [
             // Looping through the usersLiked list,
-            for (int i = 0; i < usersLiked.length; i++)
-              // renders the custom widget for invidual user.
-              likedUserCircleAvatar(usersLiked[i]),
+            // for (int i = 0; i < usersLiked.length; i++)
+            //   // renders the custom widget for invidual user.
+            //   // likedUserCircleAvatar(usersLiked[i]),
           ],
         ),
       ],
@@ -191,12 +191,12 @@ class IndividualPageLikeSection extends StatelessWidget {
 class IndividualPostCommentSection extends StatelessWidget {
   const IndividualPostCommentSection({
     super.key,
-    required this.comments,
+    // required this.comments,
     required this.postID,
   });
 
   /// List of comments on a post.
-  final List<Comments> comments;
+  // final List<Comments> comments;
 
   /// ID of a post with associated comments.
   final String postID;
@@ -282,30 +282,30 @@ class CommentTemplate extends StatelessWidget {
 /// * `user`: The user who liked the post, represented by the `LikedBy` class.
 ///
 /// **returns**:
-/// * `Widget`: Circle Avatar of the user who liked the post.
-Widget likedUserCircleAvatar(LikedBy user) {
-  return const Padding(
-    padding: EdgeInsets.only(right: 10.0, bottom: 16.0),
-    child: Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
-      children: [
-        CircleAvatar(
-          backgroundColor: Color(0xfff2f2f2),
-          radius: 20,
-        ),
-        Positioned(
-          top: 30,
-          right: 0,
-          bottom: 20,
-          left: 20,
-          child: Icon(
-            Icons.thumb_up,
-            color: Colors.blue,
-            size: 20,
-          ),
-        ),
-      ],
-    ),
-  );
-}
+// /// * `Widget`: Circle Avatar of the user who liked the post.
+// Widget likedUserCircleAvatar(LikedBy user) {
+//   return const Padding(
+//     padding: EdgeInsets.only(right: 10.0, bottom: 16.0),
+//     child: Stack(
+//       clipBehavior: Clip.none,
+//       alignment: Alignment.center,
+//       children: [
+//         CircleAvatar(
+//           backgroundColor: Color(0xfff2f2f2),
+//           radius: 20,
+//         ),
+//         Positioned(
+//           top: 30,
+//           right: 0,
+//           bottom: 20,
+//           left: 20,
+//           child: Icon(
+//             Icons.thumb_up,
+//             color: Colors.blue,
+//             size: 20,
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }

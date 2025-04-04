@@ -58,7 +58,7 @@ class DataBaseMutationFunctions {
   QueryResult noData = QueryResult(
     options: QueryOptions(
       document: gql(
-        PostQueries().addLike(),
+        PostQueries().addPostVote(),
       ),
     ),
     data: null,

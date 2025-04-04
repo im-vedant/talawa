@@ -22,6 +22,7 @@ class AddPost extends StatefulWidget {
 }
 
 class _AddPostState extends State<AddPost> {
+
   @override
   Widget build(BuildContext context) {
     // final Uint8List imageBytes = base64Decode(sampleBase64Image);
@@ -60,7 +61,6 @@ class _AddPostState extends State<AddPost> {
             onPressed: () async {
               await model.uploadPost();
               navigationService.pop();
-              // convertImageToBase64(sampleBase64Image);
             },
             child: Text(
               AppLocalizations.of(context)!.strictTranslate("Post"),
@@ -129,6 +129,10 @@ class _AddPostState extends State<AddPost> {
                                 TextButton(
                                   key: const Key("add_hashtag_button"),
                                   onPressed: () {
+                                    setState(() {
+                                      model.textHashTagController.text =
+                                          model.textHashTagController.text;
+                                    });
                                     navigationService.showTalawaErrorSnackBar(
                                       "The tag was added",
                                       MessageType.info,
@@ -156,9 +160,9 @@ class _AddPostState extends State<AddPost> {
                         );
                       },
                       child: Text(
-                        model.textHashTagController.text == ""
+                        model.textHashTagController.text.isEmpty
                             ? '# ${AppLocalizations.of(context)!.strictTranslate("Add tag")}'
-                            : model.textHashTagController.text,
+                            : '# ${model.textHashTagController.text}',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
@@ -168,38 +172,20 @@ class _AddPostState extends State<AddPost> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
-                    controller: model.titleController,
-                    // input field to write the description of the post.
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      hintText: AppLocalizations.of(context)!.strictTranslate(
-                        "Enter the title of your post",
-                      ),
-                      label: Text(
-                        AppLocalizations.of(context)!.strictTranslate(
-                          "Title",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
                     controller: model.controller,
                     maxLines: null,
-                    // input field to write the description of the post.
+                    // input field to write the caption of the post.
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
+                      label : Text(
+                        AppLocalizations.of(context)!.strictTranslate(
+                          "Caption",
+                        ),
+                      ),
                       hintText: AppLocalizations.of(context)!.strictTranslate(
                         "Write here what do you want to share",
                       ),

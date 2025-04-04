@@ -102,10 +102,10 @@ class HiveManager {
     registerAdapter<CachedUserActionStatus>(CachedUserActionStatusAdapter());
     registerAdapter<Post>(PostAdapter());
     registerAdapter<Event>(EventAdapter());
-    registerAdapter<LikedBy>(LikedByAdapter());
+    // registerAdapter<LikedBy>(LikedByAdapter());
     registerAdapter<Attendee>(AttendeeAdapter());
     registerAdapter<Comment>(CommentAdapter());
-    registerAdapter<Comments>(CommentsAdapter());
+    // registerAdapter<Comments>(CommentsAdapter());
   }
 
   /// Opens the necessary Hive boxes for storing various types of data.

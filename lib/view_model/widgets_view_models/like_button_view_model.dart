@@ -23,7 +23,7 @@ class LikeButtonViewModel extends BaseModel {
   // Local Variables for session caching
   bool _isLiked = false;
   late User _user;
-  List<LikedBy> _likedBy = [];
+  // List<LikedBy> _likedBy = [];
   late String _postID;
 
   // ignore: unused_field
@@ -31,8 +31,8 @@ class LikeButtonViewModel extends BaseModel {
 
   ///Getters.
   bool get isLiked => _isLiked;
-  List<LikedBy> get likedBy => _likedBy;
-  int get likesCount => _likedBy.length;
+  // List<LikedBy> get likedBy => _likedBy;
+  // int get likesCount => _likedBy.length;
 
   /// First function to initialize the ViewModel.
   ///
@@ -42,15 +42,15 @@ class LikeButtonViewModel extends BaseModel {
   ///
   /// **returns**:
   ///   None
-  void initialize(List<LikedBy> likedBy, String postID) {
-    _postID = postID;
-    _user = _userConfig.currentUser;
-    _likedBy = likedBy;
-    notifyListeners();
-    checkAndSetTheIsLiked();
-    _updatePostSubscription =
-        _postService.updatedPostStream.listen((post) => updatePost(post));
-  }
+  // void initialize(List<LikedBy> likedBy, String postID) {
+  //   _postID = postID;
+  //   _user = _userConfig.currentUser;
+  //   _likedBy = likedBy;
+  //   notifyListeners();
+  //   checkAndSetTheIsLiked();
+  //   _updatePostSubscription =
+  //       _postService.updatedPostStream.listen((post) => updatePost(post));
+  // }
 
   /// function to toggleisLiked boolean.
   ///
@@ -61,7 +61,7 @@ class LikeButtonViewModel extends BaseModel {
   ///   None
   void toggleIsLiked() {
     if (!_isLiked) {
-      _postService.addLike(_postID);
+      _postService.addUpvote(_postID);
     }
   }
 
@@ -86,11 +86,11 @@ class LikeButtonViewModel extends BaseModel {
   ///   None
   void checkAndSetTheIsLiked() {
     setIsLiked(val: false);
-    for (var i = 0; i < _likedBy.length; i++) {
-      if (_likedBy[i].sId == _user.id) {
-        setIsLiked();
-      }
-    }
+    // for (var i = 0; i < _likedBy.length; i++) {
+    //   if (_likedBy[i].sId == _user.id) {
+    //     setIsLiked();
+    //   }
+    // }
   }
 
   /// function to update the Post.
@@ -102,7 +102,7 @@ class LikeButtonViewModel extends BaseModel {
   ///   None
   void updatePost(Post post) {
     if (_postID == post.sId) {
-      _likedBy = post.likedBy!;
+      // _likedBy = post.likedBy!;
       checkAndSetTheIsLiked();
     }
   }

@@ -1872,6 +1872,30 @@ class MockUserConfig extends _i2.Mock implements _i27.UserConfig {
       ) as _i6.Future<void>);
 
   @override
+  _i6.Future<_i3.QueryResult<Object?>> performLogout() => (super.noSuchMethod(
+        Invocation.method(
+          #performLogout,
+          [],
+        ),
+        returnValue: _i6.Future<_i3.QueryResult<Object?>>.value(
+            _FakeQueryResult_9<Object?>(
+          this,
+          Invocation.method(
+            #performLogout,
+            [],
+          ),
+        )),
+        returnValueForMissingStub: _i6.Future<_i3.QueryResult<Object?>>.value(
+            _FakeQueryResult_9<Object?>(
+          this,
+          Invocation.method(
+            #performLogout,
+            [],
+          ),
+        )),
+      ) as _i6.Future<_i3.QueryResult<Object?>>);
+
+  @override
   _i6.Future<void> updateUserJoinedOrg(List<_i5.OrgInfo>? orgDetails) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -2221,19 +2245,6 @@ class MockSignupDetailsViewModel extends _i2.Mock
       );
 
   @override
-  _i5.OrgInfo get selectedOrganization => (super.noSuchMethod(
-        Invocation.getter(#selectedOrganization),
-        returnValue: _FakeOrgInfo_11(
-          this,
-          Invocation.getter(#selectedOrganization),
-        ),
-        returnValueForMissingStub: _FakeOrgInfo_11(
-          this,
-          Invocation.getter(#selectedOrganization),
-        ),
-      ) as _i5.OrgInfo);
-
-  @override
   set selectedOrganization(_i5.OrgInfo? _selectedOrganization) =>
       super.noSuchMethod(
         Invocation.setter(
@@ -2554,10 +2565,10 @@ class MockPost extends _i2.Mock implements _i18.Post {
       );
 
   @override
-  set description(String? _description) => super.noSuchMethod(
+  set caption(String? _caption) => super.noSuchMethod(
         Invocation.setter(
-          #description,
-          _description,
+          #caption,
+          _caption,
         ),
         returnValueForMissingStub: null,
       );
@@ -2567,33 +2578,6 @@ class MockPost extends _i2.Mock implements _i18.Post {
         Invocation.setter(
           #createdAt,
           _createdAt,
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  set imageUrl(String? _imageUrl) => super.noSuchMethod(
-        Invocation.setter(
-          #imageUrl,
-          _imageUrl,
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  set base64String(String? _base64String) => super.noSuchMethod(
-        Invocation.setter(
-          #base64String,
-          _base64String,
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  set videoUrl(String? _videoUrl) => super.noSuchMethod(
-        Invocation.setter(
-          #videoUrl,
-          _videoUrl,
         ),
         returnValueForMissingStub: null,
       );
@@ -2617,16 +2601,90 @@ class MockPost extends _i2.Mock implements _i18.Post {
       );
 
   @override
-  set likedBy(List<_i18.LikedBy>? _likedBy) => super.noSuchMethod(
+  set attachments(List<_i18.PostAttachment>? _attachments) =>
+      super.noSuchMethod(
         Invocation.setter(
-          #likedBy,
-          _likedBy,
+          #attachments,
+          _attachments,
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  set comments(List<_i18.Comments>? _comments) => super.noSuchMethod(
+  set updater(_i7.User? _updater) => super.noSuchMethod(
+        Invocation.setter(
+          #updater,
+          _updater,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set commentsCount(int? _commentsCount) => super.noSuchMethod(
+        Invocation.setter(
+          #commentsCount,
+          _commentsCount,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set downVotesCount(int? _downVotesCount) => super.noSuchMethod(
+        Invocation.setter(
+          #downVotesCount,
+          _downVotesCount,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set upVotesCount(int? _upVotesCount) => super.noSuchMethod(
+        Invocation.setter(
+          #upVotesCount,
+          _upVotesCount,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set pinnedAt(DateTime? _pinnedAt) => super.noSuchMethod(
+        Invocation.setter(
+          #pinnedAt,
+          _pinnedAt,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set updatedAt(DateTime? _updatedAt) => super.noSuchMethod(
+        Invocation.setter(
+          #updatedAt,
+          _updatedAt,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set downVoters(_i18.PostDownVotersConnection? _downVoters) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #downVoters,
+          _downVoters,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set upVoters(_i18.PostUpVotersConnection? _upVoters) => super.noSuchMethod(
+        Invocation.setter(
+          #upVoters,
+          _upVoters,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set comments(_i18.PostCommentsConnection? _comments) => super.noSuchMethod(
         Invocation.setter(
           #comments,
           _comments,

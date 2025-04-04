@@ -24,6 +24,13 @@ import 'package:talawa/utils/post_queries.dart';
 /// * `addLike` : to add like to the post.
 /// * `removeLike` : to remove the like from the post.
 
+  enum PostVoteType {
+  // ignore: constant_identifier_names
+  down_vote,
+  // ignore: constant_identifier_names
+  up_vote,
+}
+
 class PostService extends BaseFeedManager<Post> {
   // constructor
   PostService() : super(HiveKeys.postFeedKey) {
@@ -186,19 +193,19 @@ class PostService extends BaseFeedManager<Post> {
   ///
   /// **returns**:
   /// * `Future<void>`: define_the_return
-  Future<bool> addLike(String postID) async {
+  Future<bool> addUpvote(String postID) async {
     bool isLiked = false;
     await actionHandlerService.performAction(
       actionType: ActionType.optimistic,
       action: () async {
-        final String mutation = PostQueries().addLike();
+        final String mutation = PostQueries().addPostVote();
         // run the graphQl mutation.
         return await _dbFunctions
-            .gqlAuthMutation(mutation, variables: {"postID": postID});
+            .gqlAuthMutation(mutation, variables: {"postID": postID, "type" : PostVoteType.up_vote});
         // return result
       },
       onValidResult: (result) async {
-        isLiked = (result.data?["_id"] != null);
+        isLiked = (result.data?["id"] != null);
       },
       updateUI: () {
         _localAddLike(postID);
@@ -217,7 +224,7 @@ class PostService extends BaseFeedManager<Post> {
   void _localAddLike(String postID) {
     _posts.forEach((post) {
       if (post.sId == postID) {
-        post.likedBy!.add(LikedBy(sId: _userConfig.currentUser.id));
+        // post.likedBy!.add(LikedBy(sId: _userConfig.currentUser.id));
         _updatedPostStreamController.add(post);
       }
     });
@@ -233,17 +240,17 @@ class PostService extends BaseFeedManager<Post> {
   ///
   /// **returns**:
   /// * `Future<void>`: nothing
-  Future<bool> removeLike(String postID) async {
+  Future<bool> removeUpvote(String postID, String creatorID) async {
     bool isLiked = false;
     await actionHandlerService.performAction(
       actionType: ActionType.optimistic,
       action: () async {
-        final String mutation = PostQueries().removeLike();
+        final String mutation = PostQueries().removePostVote();
         return await _dbFunctions
-            .gqlAuthMutation(mutation, variables: {"postID": postID});
+            .gqlAuthMutation(mutation, variables: {"postID": postID, "creatorID" : creatorID});
       },
       onValidResult: (result) async {
-        isLiked = (result.data?["_id"] != null);
+        isLiked = (result.data?["id"] != null);
       },
       updateUI: () {
         _removeLocal(postID);
@@ -262,9 +269,9 @@ class PostService extends BaseFeedManager<Post> {
   void _removeLocal(String postID) {
     _posts.forEach((post) {
       if (post.sId == postID) {
-        post.likedBy!.removeWhere(
-          (likeUser) => likeUser.sId == _userConfig.currentUser.id,
-        );
+        // post.likedBy!.removeWhere(
+        //   (likeUser) => likeUser.sId == _userConfig.currentUser.id,
+        // );
         _updatedPostStreamController.add(post);
       }
     });
@@ -280,7 +287,7 @@ class PostService extends BaseFeedManager<Post> {
   void addCommentLocally(String postID) {
     for (int i = 0; i < _posts.length; i++) {
       if (_posts[i].sId == postID) {
-        _posts[i].comments!.add(Comments(sId: postID));
+        // _posts[i].comments!.add(Comments(sId: postID));
         _updatedPostStreamController.add(_posts[i]);
       }
     }
