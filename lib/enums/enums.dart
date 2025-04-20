@@ -120,3 +120,8 @@ enum ActionType {
   /// even if the result is not immediately confirmed.
   optimistic,
 }
+
+enum VoterType {
+  upvoter,
+  downvoter
+}

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:talawa/models/comment/comment_model.dart';
 import 'package:talawa/models/organization/org_info.dart';
 import 'package:talawa/models/pageinfo/pageinfo_model.dart';
 import 'package:talawa/models/user/user_info.dart';
@@ -42,8 +43,11 @@ class Post {
     ? DateTime.parse(json['createdAt'] as String) 
     : null;
     creator = json['creator'] != null
-        ? User.fromJson(json['creator'] as Map<String, dynamic>, fromOrg: true)
+        ? User.fromJson(json['creator'] as Map<String, dynamic>)
         : null;
+    print("first name");
+    print(creator!.firstName);
+    print(json["creator"]);
     organization = json['organization'] != null
         ? OrgInfo.fromJson(json['organization'] as Map<String, dynamic>)
         : null;
@@ -52,12 +56,14 @@ class Post {
             .map((e) => PostAttachment.fromJson(e as Map<String, dynamic>))
             .toList()
         : [];
+    print("attachments");
     upVoters = json['upVoters'] != null
         ? PostUpVotersConnection.fromJson(json['upVoters'] as Map<String, dynamic>)
         : null;
     comments = json['comments'] != null
         ? PostCommentsConnection.fromJson(json['comments'] as Map<String, dynamic>)
         : null;
+      print("comments");
     downVoters = json['downVoters'] != null
         ? PostDownVotersConnection.fromJson(json['downVoters'] as Map<String, dynamic>)
         : null;
@@ -73,6 +79,7 @@ class Post {
     updatedAt = json['updatedAt'] != null
         ? DateTime.parse(json['updatedAt'] as String)
         : null;
+        print("okay");
       
   }
 
@@ -163,7 +170,7 @@ class Post {
 }
 
 /// Represents a connection of users who have down voted a post.
-@HiveType(typeId: 7)
+@HiveType(typeId: 8)
 class PostDownVotersConnection {
   /// Creates a new PostDownVotersConnection instance.
   PostDownVotersConnection({
@@ -173,6 +180,7 @@ class PostDownVotersConnection {
 
   /// Creates a PostDownVotersConnection from JSON data.
   factory PostDownVotersConnection.fromJson(Map<String, dynamic> json) {
+    print("downvoters");
     return PostDownVotersConnection(
       edges: json['edges'] != null
           ? (json['edges'] as List)
@@ -193,19 +201,19 @@ class PostDownVotersConnection {
 }
 
 /// Represents an edge in the Post Down Voters Connection graph.
-@HiveType(typeId: 8)
+@HiveType(typeId: 18)
 class PostDownVotersConnectionEdge {
   /// Creates a new PostDownVotersConnectionEdge instance.
   PostDownVotersConnectionEdge({
     required this.cursor,
-    this.node,
+    required this.node,
   });
 
   /// Creates a PostDownVotersConnectionEdge from JSON data.
   factory PostDownVotersConnectionEdge.fromJson(Map<String, dynamic> json) {
     return PostDownVotersConnectionEdge(
       cursor: json['cursor'] as String,
-      node: json['node'] != null ? User.fromJson(json['node'] as Map<String, dynamic>) : null,
+      node:  User.fromJson(json['node'] as Map<String, dynamic>),
     );
   }
 
@@ -215,33 +223,34 @@ class PostDownVotersConnectionEdge {
 
   /// The user node in the connection.
   @HiveField(1)
-  final User? node;
+  final User node;
 }
 
 /// Represents a connection of users who have up voted a post.
-@HiveType(typeId: 10)
+@HiveType(typeId: 17)
 class PostUpVotersConnection {
   /// Creates a new PostUpVotersConnection instance.
   PostUpVotersConnection({
     required this.pageInfo,
-    this.edges,
+    required this.edges,
   });
 
   /// Creates a PostUpVotersConnection from JSON data.
   factory PostUpVotersConnection.fromJson(Map<String, dynamic> json) {
+    print("upvoters");
+    print(json['edges']);
+    print(json['pageInfo']);
     return PostUpVotersConnection(
-      edges: json['edges'] != null
-          ? (json['edges'] as List)
-              .map((e) => PostUpVotersConnectionEdge.fromJson(e as Map<String, dynamic>))
-              .toList()
-          : null,
+edges: (json['edges'] as List<dynamic>?)
+    ?.map((e) => PostUpVotersConnectionEdge.fromJson(e as Map<String, dynamic>))
+    .toList() ?? [],
       pageInfo: PageInfo.fromJson(json['pageInfo'] as Map<String, dynamic>),
     );
   }
 
   /// List of edges containing up voter information.
   @HiveField(0)
-  final List<PostUpVotersConnectionEdge>? edges;
+  final List<PostUpVotersConnectionEdge> edges;
 
   /// Pagination information for the connection.
   @HiveField(1)
@@ -249,19 +258,20 @@ class PostUpVotersConnection {
 }
 
 /// Represents an edge in the Post Up Voters Connection graph.
-@HiveType(typeId: 11)
+@HiveType(typeId: 13)
 class PostUpVotersConnectionEdge {
   /// Creates a new PostUpVotersConnectionEdge instance.
   PostUpVotersConnectionEdge({
     required this.cursor,
-    this.node,
+    required this.node,
   });
 
   /// Creates a PostUpVotersConnectionEdge from JSON data.
   factory PostUpVotersConnectionEdge.fromJson(Map<String, dynamic> json) {
+    print("upvoters edge");
     return PostUpVotersConnectionEdge(
       cursor: json['cursor'] as String,
-      node: json['node'] != null ? User.fromJson(json['node'] as Map<String, dynamic>) : null,
+      node: User.fromJson(json['node'] as Map<String, dynamic>),
     );
   }
 
@@ -271,11 +281,11 @@ class PostUpVotersConnectionEdge {
 
   /// The user node in the connection.
   @HiveField(1)
-  final User? node;
+  final User node;
 }
 
 /// Represents a connection of comments on a post.
-@HiveType(typeId: 12)
+@HiveType(typeId: 14)
 class PostCommentsConnection {
   /// Creates a new PostCommentsConnection instance.
   PostCommentsConnection({
@@ -305,19 +315,19 @@ class PostCommentsConnection {
 }
 
 /// Represents an edge in the Post Comments Connection graph.
-@HiveType(typeId: 13)
+@HiveType(typeId: 15)
 class PostCommentsConnectionEdge {
   /// Creates a new PostCommentsConnectionEdge instance.
   PostCommentsConnectionEdge({
     required this.cursor,
-    this.node,
+    required this.node,
   });
 
   /// Creates a PostCommentsConnectionEdge from JSON data.
   factory PostCommentsConnectionEdge.fromJson(Map<String, dynamic> json) {
     return PostCommentsConnectionEdge(
       cursor: json['cursor'] as String,
-      node: json['node'] != null ? PostComment.fromJson(json['node'] as Map<String, dynamic>) : null,
+      node:  Comment.fromJson(json['node'] as Map<String, dynamic>),
     );
   }
 
@@ -327,64 +337,9 @@ class PostCommentsConnectionEdge {
 
   /// The comment node in the connection.
   @HiveField(1)
-  final PostComment? node;
+  final Comment node;
 }
 
-/// Represents a comment on a post.
-@HiveType(typeId: 14)
-class PostComment {
-  /// Creates a new PostComment instance.
-  PostComment({
-    required this.id,
-    required this.text,
-    required this.createdAt,
-    required this.creator,
-    this.updatedAt,
-    this.upVotesCount = 0,
-    this.downVotesCount = 0,
-  });
-
-  /// Creates a PostComment from JSON data.
-  factory PostComment.fromJson(Map<String, dynamic> json) {
-    return PostComment(
-      id: json['id'] as String,
-      text: json['text'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      creator: User.fromJson(json['creator'] as Map<String, dynamic>),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : null,
-      upVotesCount: json['upVotesCount'] as int? ?? 0,
-      downVotesCount: json['downVotesCount'] as int? ?? 0,
-    );
-  }
-
-  /// Unique identifier for the comment.
-  @HiveField(0)
-  final String id;
-
-  /// The text content of the comment.
-  @HiveField(1)
-  final String text;
-
-  /// When the comment was created.
-  @HiveField(2)
-  final DateTime createdAt;
-
-  /// When the comment was last updated.
-  @HiveField(3)
-  final DateTime? updatedAt;
-
-  /// The user who created the comment.
-  @HiveField(4)
-  final User creator;
-
-  /// Number of upvotes the comment has received.
-  @HiveField(5)
-  final int upVotesCount;
-
-  /// Number of downvotes the comment has received.
-  @HiveField(6)
-  final int downVotesCount;
-}
 
 /// Model class representing a post attachment.
 ///

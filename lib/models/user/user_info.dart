@@ -22,12 +22,13 @@ class User extends HiveObject {
     this.authToken,
     this.refreshToken,
     this.membershipRequests,
+    this.avatarURL,
   });
 
   factory User.fromJson(Map<String, dynamic> json, {bool fromOrg = false}) {
-    final Map<String, dynamic> userData =
-        json['user'] != null ? json['user'] as Map<String, dynamic> : {};
-    final String? fullName = userData['name'] as String?;
+    debugPrint("called");
+
+    final String? fullName = json['name'] as String?;
     final List<String>? nameParts = fullName?.split(' ');
     final String? firstName =
         nameParts != null && nameParts.isNotEmpty ? nameParts[0] : null;
@@ -35,30 +36,32 @@ class User extends HiveObject {
         ? nameParts.sublist(1).join(' ')
         : null;
     final Map<String, dynamic>? org =
-        userData['organizationsWhereMember'] as Map<String, dynamic>?;
+        json['organizationsWhereMember'] != null ? json['organizationsWhereMember'] as Map<String, dynamic> : null;
     final List<dynamic>? edges = org?['edges'] as List<dynamic>?;
     final List<Map<String, dynamic>>? orgList =
         edges?.map((e) => e as Map<String, dynamic>).toList();
+    
     return User(
-      authToken: json['authenticationToken'] != null
-          ? json['authenticationToken'] as String?
-          : null,
       refreshToken: fromOrg ? ' ' : json['refreshToken'] as String?,
-      id: userData['id'] as String?,
+      id: json['id'] as String?,
       firstName: firstName,
       lastName: lastName,
-      email: userData['emailAddress'] != null
-          ? userData['emailAddress'] as String?
+      email: json['emailAddress'] != null
+          ? json['emailAddress'] as String?
           : null,
-      image: userData['avatarURL'] != null
-          ? userData['avatarURL'] as String?
+      image: json['avatarURL'] != null
+          ? json['avatarURL'] as String?
           : null,
       joinedOrganizations: orgList != null
           ? orgList
               .map((e) => OrgInfo.fromJson(e["node"] as Map<String, dynamic>))
               .toList()
           : [],
+       avatarURL: json['avatarURL'] != null
+              ? json['avatarURL'] as String?
+              : null,
     );
+
   }
 
   /// Method to print the User details.
@@ -125,6 +128,10 @@ class User extends HiveObject {
   /// HiveField for all organisations user has sent membership request.
   @HiveField(10)
   List<OrgInfo>? membershipRequests = [];
+
+  /// HiveField for user's avatar URL.
+  @HiveField(11)
+  String? avatarURL;
 
   /// Method to updated joinedOrganisation list.
   ///

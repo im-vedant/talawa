@@ -85,7 +85,7 @@ class PostAdapter extends TypeAdapter<Post> {
 class PostDownVotersConnectionAdapter
     extends TypeAdapter<PostDownVotersConnection> {
   @override
-  final int typeId = 7;
+  final int typeId = 8;
 
   @override
   PostDownVotersConnection read(BinaryReader reader) {
@@ -123,7 +123,7 @@ class PostDownVotersConnectionAdapter
 class PostDownVotersConnectionEdgeAdapter
     extends TypeAdapter<PostDownVotersConnectionEdge> {
   @override
-  final int typeId = 8;
+  final int typeId = 18;
 
   @override
   PostDownVotersConnectionEdge read(BinaryReader reader) {
@@ -133,7 +133,7 @@ class PostDownVotersConnectionEdgeAdapter
     };
     return PostDownVotersConnectionEdge(
       cursor: fields[0] as String,
-      node: fields[1] as User?,
+      node: fields[1] as User,
     );
   }
 
@@ -161,7 +161,7 @@ class PostDownVotersConnectionEdgeAdapter
 class PostUpVotersConnectionAdapter
     extends TypeAdapter<PostUpVotersConnection> {
   @override
-  final int typeId = 10;
+  final int typeId = 17;
 
   @override
   PostUpVotersConnection read(BinaryReader reader) {
@@ -171,7 +171,7 @@ class PostUpVotersConnectionAdapter
     };
     return PostUpVotersConnection(
       pageInfo: fields[1] as PageInfo,
-      edges: (fields[0] as List?)?.cast<PostUpVotersConnectionEdge>(),
+      edges: (fields[0] as List).cast<PostUpVotersConnectionEdge>(),
     );
   }
 
@@ -199,7 +199,7 @@ class PostUpVotersConnectionAdapter
 class PostUpVotersConnectionEdgeAdapter
     extends TypeAdapter<PostUpVotersConnectionEdge> {
   @override
-  final int typeId = 11;
+  final int typeId = 13;
 
   @override
   PostUpVotersConnectionEdge read(BinaryReader reader) {
@@ -209,7 +209,7 @@ class PostUpVotersConnectionEdgeAdapter
     };
     return PostUpVotersConnectionEdge(
       cursor: fields[0] as String,
-      node: fields[1] as User?,
+      node: fields[1] as User,
     );
   }
 
@@ -237,7 +237,7 @@ class PostUpVotersConnectionEdgeAdapter
 class PostCommentsConnectionAdapter
     extends TypeAdapter<PostCommentsConnection> {
   @override
-  final int typeId = 12;
+  final int typeId = 14;
 
   @override
   PostCommentsConnection read(BinaryReader reader) {
@@ -275,7 +275,7 @@ class PostCommentsConnectionAdapter
 class PostCommentsConnectionEdgeAdapter
     extends TypeAdapter<PostCommentsConnectionEdge> {
   @override
-  final int typeId = 13;
+  final int typeId = 15;
 
   @override
   PostCommentsConnectionEdge read(BinaryReader reader) {
@@ -285,7 +285,7 @@ class PostCommentsConnectionEdgeAdapter
     };
     return PostCommentsConnectionEdge(
       cursor: fields[0] as String,
-      node: fields[1] as PostComment?,
+      node: fields[1] as Comment,
     );
   }
 
@@ -306,58 +306,6 @@ class PostCommentsConnectionEdgeAdapter
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PostCommentsConnectionEdgeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class PostCommentAdapter extends TypeAdapter<PostComment> {
-  @override
-  final int typeId = 14;
-
-  @override
-  PostComment read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return PostComment(
-      id: fields[0] as String,
-      text: fields[1] as String,
-      createdAt: fields[2] as DateTime,
-      creator: fields[4] as User,
-      updatedAt: fields[3] as DateTime?,
-      upVotesCount: fields[5] as int,
-      downVotesCount: fields[6] as int,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, PostComment obj) {
-    writer
-      ..writeByte(7)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.text)
-      ..writeByte(2)
-      ..write(obj.createdAt)
-      ..writeByte(3)
-      ..write(obj.updatedAt)
-      ..writeByte(4)
-      ..write(obj.creator)
-      ..writeByte(5)
-      ..write(obj.upVotesCount)
-      ..writeByte(6)
-      ..write(obj.downVotesCount);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is PostCommentAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

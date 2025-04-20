@@ -1,5 +1,3 @@
-
-
 import 'package:hive/hive.dart';
 
 part 'pageinfo_model.g.dart';
@@ -20,15 +18,18 @@ class PageInfo extends HiveObject {
 
   factory PageInfo.fromJson(Map<String, dynamic> json) {
     return PageInfo(
-      endCursor: json['endCursor'] as String?,
+      endCursor: json['endCursor']?.toString(),
       hasNextPage: json['hasNextPage'] as bool,
       hasPreviousPage: json['hasPreviousPage'] as bool,
-      startCursor: json['startCursor'] as String?,
+      startCursor: json['startCursor']?.toString(),
     );
   }
+
   /// The cursor pointing to the last item in the current page.
+  /// Can be null if there are no items or this is the last page.
   @HiveField(0)
   final String? endCursor;
+
   /// Indicates whether there are more pages after the current page.
   @HiveField(1)
   final bool hasNextPage;
@@ -38,6 +39,14 @@ class PageInfo extends HiveObject {
   final bool hasPreviousPage;
   
   /// The cursor pointing to the first item in the current page.
+  /// Can be null if there are no items or this is the first page.
   @HiveField(3)
   final String? startCursor;
+
+  Map<String, dynamic> toJson() => {
+    'endCursor': endCursor,
+    'hasNextPage': hasNextPage,
+    'hasPreviousPage': hasPreviousPage,
+    'startCursor': startCursor,
+  };
 }

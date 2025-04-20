@@ -1,9 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:talawa/apptheme.dart';
 
-import 'package:talawa/services/size_config.dart';
 
 /// Pinned post screen.
 ///
@@ -33,7 +31,7 @@ class _PinnedPostScreenState extends State<PinnedPostScreen> {
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Text(
-                widget.post['title']!,
+                widget.post['caption']!,
                 maxLines: 2,
                 style: AppTheme.title.copyWith(
                   color: Colors.white,
@@ -47,7 +45,7 @@ class _PinnedPostScreenState extends State<PinnedPostScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    '${widget.post['time']!}hr',
+                    '${widget.post['createdAt']!}hr',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w200,
@@ -58,19 +56,19 @@ class _PinnedPostScreenState extends State<PinnedPostScreen> {
                 ),
               ],
             ),
-            CachedNetworkImage(
-              cacheManager: widget.cacheManager,
-              imageUrl: widget.post['imageUrl']!,
-              errorWidget: (context, url, error) {
-                return const SizedBox(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              },
-              height: SizeConfig.screenHeight! * .75,
-              fit: BoxFit.cover,
-            ),
+            // CachedNetworkImage(
+            //   cacheManager: widget.cacheManager,
+            //   imageUrl: widget.post['imageUrl']!,
+            //   errorWidget: (context, url, error) {
+            //     return const SizedBox(
+            //       child: Center(
+            //         child: CircularProgressIndicator(),
+            //       ),
+            //     );
+            //   },
+            //   height: SizeConfig.screenHeight! * .75,
+            //   fit: BoxFit.cover,
+            // ),
           ],
         ),
       ),

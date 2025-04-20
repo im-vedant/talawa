@@ -738,6 +738,7 @@ class MockGraphQLClient extends _i2.Mock implements _i3.GraphQLClient {
     _i3.GraphQLCache? cache,
     _i3.DefaultPolicies? defaultPolicies,
     bool? alwaysRebroadcast,
+    Duration? queryRequestTimeout,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -748,6 +749,7 @@ class MockGraphQLClient extends _i2.Mock implements _i3.GraphQLClient {
             #cache: cache,
             #defaultPolicies: defaultPolicies,
             #alwaysRebroadcast: alwaysRebroadcast,
+            #queryRequestTimeout: queryRequestTimeout,
           },
         ),
         returnValue: _FakeGraphQLClient_3(
@@ -760,6 +762,7 @@ class MockGraphQLClient extends _i2.Mock implements _i3.GraphQLClient {
               #cache: cache,
               #defaultPolicies: defaultPolicies,
               #alwaysRebroadcast: alwaysRebroadcast,
+              #queryRequestTimeout: queryRequestTimeout,
             },
           ),
         ),
@@ -773,6 +776,7 @@ class MockGraphQLClient extends _i2.Mock implements _i3.GraphQLClient {
               #cache: cache,
               #defaultPolicies: defaultPolicies,
               #alwaysRebroadcast: alwaysRebroadcast,
+              #queryRequestTimeout: queryRequestTimeout,
             },
           ),
         ),
@@ -1169,26 +1173,6 @@ class MockPostService extends _i2.Mock implements _i17.PostService {
       ) as _i6.Future<_i3.QueryResult<Object?>>);
 
   @override
-  _i6.Future<bool> addLike(String? postID) => (super.noSuchMethod(
-        Invocation.method(
-          #addLike,
-          [postID],
-        ),
-        returnValue: _i6.Future<bool>.value(false),
-        returnValueForMissingStub: _i6.Future<bool>.value(false),
-      ) as _i6.Future<bool>);
-
-  @override
-  _i6.Future<bool> removeLike(String? postID) => (super.noSuchMethod(
-        Invocation.method(
-          #removeLike,
-          [postID],
-        ),
-        returnValue: _i6.Future<bool>.value(false),
-        returnValueForMissingStub: _i6.Future<bool>.value(false),
-      ) as _i6.Future<bool>);
-
-  @override
   void addCommentLocally(String? postID) => super.noSuchMethod(
         Invocation.method(
           #addCommentLocally,
@@ -1216,6 +1200,143 @@ class MockPostService extends _i2.Mock implements _i17.PostService {
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<String?> getPresignedUrl(
+    String? objectName,
+    String? organizationId,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPresignedUrl,
+          [
+            objectName,
+            organizationId,
+          ],
+        ),
+        returnValue: _i6.Future<String?>.value(),
+        returnValueForMissingStub: _i6.Future<String?>.value(),
+      ) as _i6.Future<String?>);
+
+  @override
+  _i6.Future<_i17.PostVoteType?> hasUserVoted(String? postId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #hasUserVoted,
+          [postId],
+        ),
+        returnValue: _i6.Future<_i17.PostVoteType?>.value(),
+        returnValueForMissingStub: _i6.Future<_i17.PostVoteType?>.value(),
+      ) as _i6.Future<_i17.PostVoteType?>);
+
+  @override
+  void updatePost(_i18.Post? updatedPost) => super.noSuchMethod(
+        Invocation.method(
+          #updatePost,
+          [updatedPost],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i6.Future<_i3.QueryResult<Object?>> addVote(
+    String? postID,
+    _i17.PostVoteType? voteType,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #addVote,
+          [
+            postID,
+            voteType,
+          ],
+        ),
+        returnValue: _i6.Future<_i3.QueryResult<Object?>>.value(
+            _FakeQueryResult_9<Object?>(
+          this,
+          Invocation.method(
+            #addVote,
+            [
+              postID,
+              voteType,
+            ],
+          ),
+        )),
+        returnValueForMissingStub: _i6.Future<_i3.QueryResult<Object?>>.value(
+            _FakeQueryResult_9<Object?>(
+          this,
+          Invocation.method(
+            #addVote,
+            [
+              postID,
+              voteType,
+            ],
+          ),
+        )),
+      ) as _i6.Future<_i3.QueryResult<Object?>>);
+
+  @override
+  _i6.Future<_i3.QueryResult<Object?>> removeVote(
+    String? postID,
+    String? creatorID,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeVote,
+          [
+            postID,
+            creatorID,
+          ],
+        ),
+        returnValue: _i6.Future<_i3.QueryResult<Object?>>.value(
+            _FakeQueryResult_9<Object?>(
+          this,
+          Invocation.method(
+            #removeVote,
+            [
+              postID,
+              creatorID,
+            ],
+          ),
+        )),
+        returnValueForMissingStub: _i6.Future<_i3.QueryResult<Object?>>.value(
+            _FakeQueryResult_9<Object?>(
+          this,
+          Invocation.method(
+            #removeVote,
+            [
+              postID,
+              creatorID,
+            ],
+          ),
+        )),
+      ) as _i6.Future<_i3.QueryResult<Object?>>);
+
+  @override
+  _i6.Future<Map<String, dynamic>?> getPostVoters({
+    required String? postId,
+    required bool? isUpVoters,
+    int? first,
+    int? last,
+    String? after,
+    String? before,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPostVoters,
+          [],
+          {
+            #postId: postId,
+            #isUpVoters: isUpVoters,
+            #first: first,
+            #last: last,
+            #after: after,
+            #before: before,
+          },
+        ),
+        returnValue: _i6.Future<Map<String, dynamic>?>.value(),
+        returnValueForMissingStub: _i6.Future<Map<String, dynamic>?>.value(),
+      ) as _i6.Future<Map<String, dynamic>?>);
 
   @override
   _i6.Future<List<_i18.Post>> loadCachedData() => (super.noSuchMethod(
@@ -3587,14 +3708,14 @@ class MockCommentService extends _i2.Mock implements _i37.CommentService {
   @override
   _i6.Future<void> createComments(
     String? postId,
-    String? text,
+    String? body,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #createComments,
           [
             postId,
-            text,
+            body,
           ],
         ),
         returnValue: _i6.Future<void>.value(),

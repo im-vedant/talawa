@@ -1,9 +1,10 @@
+import 'package:talawa/constants/app_strings.dart';
 import 'package:talawa/enums/enums.dart';
 import 'package:talawa/locator.dart';
 import 'package:talawa/models/comment/comment_model.dart';
+import 'package:talawa/models/pageinfo/pageinfo_model.dart';
 import 'package:talawa/services/comment_service.dart';
 import 'package:talawa/services/post_service.dart';
-import 'package:talawa/services/user_config.dart';
 import 'package:talawa/view_model/base_view_model.dart';
 
 /// CommentsViewModel class helps to serve the data from model and to react to user's input for Comment Widget.
@@ -15,17 +16,17 @@ class CommentsViewModel extends BaseModel {
   /// Constructor
   late CommentService _commentService;
 
-  /// PostService instance.
-  late PostService _postService;
-
   /// Post id on which comments are to be fetched.
   late String _postID;
 
   /// List of comments on the post.
   late List<Comment> _commentlist;
 
-  /// UserConfig instance.
-  late UserConfig _userConfig;
+  /// PageInfo for comment pagination
+  PageInfo? _pageInfo;
+
+  /// Getter for pageInfo
+  PageInfo? get pageInfo => _pageInfo;
 
   /// comment list getter.
   List<Comment> get commentList => _commentlist;
@@ -45,9 +46,6 @@ class CommentsViewModel extends BaseModel {
     _commentlist = [];
     _postID = postID;
     _commentService = locator<CommentService>();
-    _userConfig = locator<UserConfig>();
-    _postService = locator<PostService>();
-    notifyListeners();
     await getComments();
   }
 
@@ -59,14 +57,26 @@ class CommentsViewModel extends BaseModel {
   ///
   /// **returns**:
   ///   None
-  Future<void> getComments() async {
+  Future<void> getComments({String? after}) async {
     setState(ViewState.busy);
-    final List commentsJSON = await _commentService.getCommentsForPost(_postID);
-    print(commentsJSON);
-    commentsJSON.forEach((commentJson) {
-      _commentlist.add(Comment.fromJson(commentJson as Map<String, dynamic>));
-    });
+    final result = await _commentService.getCommentsForPost(_postID, after: after);
+    
+    if (result != null) {
+      if (after == null) {
+        _commentlist.clear();
+      }
+      
+      final comments = result['edges'] as List<dynamic>;
+      comments.forEach((edge) {
+        final comment = (edge as Map<String, dynamic>)['node'];
+        _commentlist.add(Comment.fromJson(comment as Map<String, dynamic>));
+      });
+    
+      _pageInfo = PageInfo.fromJson(result['pageInfo'] as Map<String, dynamic>);
+    }
+    
     setState(ViewState.idle);
+    notifyListeners();
   }
 
   /// This function add comment on the post. The function uses `createComments` method provided by Comment Service.
@@ -78,33 +88,25 @@ class CommentsViewModel extends BaseModel {
   ///   None
   Future<void> createComment(String msg) async {
     await actionHandlerService.performAction(
-      actionType: ActionType.optimistic,
+      actionType: ActionType.critical,
+      criticalActionFailureMessage: TalawaErrors.commentCreationFailed,
       action: () async {
-        await _commentService.createComments(_postID, msg);
-        return null;
+       final result = await _commentService.createComments(_postID, msg);
+        return result;
       },
-      updateUI: () {
-        addCommentLocally(msg);
-      },
+      onValidResult: (result) async {
+        // Update comment count in the post
+        final postService = locator<PostService>();
+        postService.addCommentLocally(_postID);
+        await getComments();
+      }
     );
   }
 
-  /// This function add comment locally.
-  ///
-  /// **params**:
-  /// * `msg`: BuildContext, contain parent info
-  ///
-  /// **returns**:
-  ///   None
-  void addCommentLocally(String msg) {
-    _postService.addCommentLocally(_postID);
-    final creator = _userConfig.currentUser;
-    final Comment localComment = Comment(
-      text: msg,
-      createdAt: DateTime.now().toString(),
-      creator: creator,
-    );
-    _commentlist.add(localComment);
-    notifyListeners();
+  /// Load more comments using pagination
+  Future<void> loadMoreComments() async {
+    if (_pageInfo?.hasNextPage == true) {
+      await getComments(after: _pageInfo?.endCursor);
+    }
   }
 }

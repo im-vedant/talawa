@@ -42,6 +42,7 @@ class OrgInfo {
     final List<User> members = memberEdges
         .map(
           (e) =>
+              // ignore: avoid_dynamic_calls
               User.fromJson(e['node'] as Map<String, dynamic>, fromOrg: true),
         )
         .toList();

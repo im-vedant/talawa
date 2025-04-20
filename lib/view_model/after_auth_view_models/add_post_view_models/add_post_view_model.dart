@@ -187,13 +187,13 @@ class AddPostViewModel extends BaseModel {
                 );
 
                 if (response.statusCode != 200) {
-                  print('File upload failed with status: ${response.statusCode}');
-                  print('Response body: ${response.body}');
+                  debugPrint('File upload failed with status: ${response.statusCode}');
+                  debugPrint('Response body: ${response.body}');
                   throw Exception('Failed to upload file: ${response.statusCode}');
                 }
               } catch (e) {
-                print('Error uploading file: $e');
-                rethrow; // Re-throw the error to be handled by the action handler
+                debugPrint('Error uploading file: $e');
+                rethrow;
               }
             }
           }
@@ -251,6 +251,7 @@ class AddPostViewModel extends BaseModel {
       },
     );
   }
+
 
   /// This function removes the image selected.
   ///

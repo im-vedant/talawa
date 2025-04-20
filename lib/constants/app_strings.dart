@@ -81,4 +81,8 @@ class TalawaErrors {
   /// Error for signup attempt when offline.
   static const String youAreOfflineUnableToSignUp =
       'You are offline, unable to sign up, please try again later.';
+
+  /// Error for creating a comment.
+  static const String commentCreationFailed =
+      'You are offline. Failed to create comment. Please try again.'; 
 }

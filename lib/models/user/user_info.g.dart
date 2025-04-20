@@ -28,13 +28,14 @@ class UserAdapter extends TypeAdapter<User> {
       authToken: fields[0] as String?,
       refreshToken: fields[1] as String?,
       membershipRequests: (fields[10] as List?)?.cast<OrgInfo>(),
+      avatarURL: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.authToken)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(9)
       ..write(obj.adminFor)
       ..writeByte(10)
-      ..write(obj.membershipRequests);
+      ..write(obj.membershipRequests)
+      ..writeByte(11)
+      ..write(obj.avatarURL);
   }
 
   @override

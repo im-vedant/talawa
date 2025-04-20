@@ -88,10 +88,11 @@ class DataBaseMutationFunctions {
       operationType: CachedOperationType.gqlAuthQuery,
       whenOnline: () async {
         final QueryResult result = await clientAuth.query(options);
+        print(result);
         // if there is an error or exception in [result]
         if (result.hasException) {
           final exception =
-              GraphqlExceptionResolver.encounteredExceptionOrError(
+            GraphqlExceptionResolver.encounteredExceptionOrError(
             result.exception!,
           );
           if (exception!) {
@@ -99,12 +100,13 @@ class DataBaseMutationFunctions {
           }
         } else if (result.data != null && result.isConcrete) {
           // coverage:ignore-start
-          traverseAndConvertDates(
-            result.data ?? <String, dynamic>{},
-            convertUTCToLocal,
-            splitDateTimeLocal,
-          );
+          // traverseAndConvertDates(
+          //   result.data ?? <String, dynamic>{},
+          //   convertUTCToLocal,
+          //   splitDateTimeLocal,
+          // );
           // coverage:ignore-end
+          print("returning result $result");
           return result;
         }
         return noData;

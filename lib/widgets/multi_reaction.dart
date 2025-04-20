@@ -1,118 +1,97 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_reaction_button/flutter_reaction_button.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:talawa/services/post_service.dart';
 
-/// Reaction Button with multiple Emojis.
-class MultiReactButton extends StatefulWidget {
-  const MultiReactButton({super.key, required this.toggle});
+/// Enhanced Vote Button with Up and Down vote options shown simultaneously
+class MultiReactButton extends StatelessWidget {
+  const MultiReactButton({
+    super.key, 
+    required this.onVotePress,
+    required this.isUpvoted,
+    required this.isDownvoted,
+    required this.upvoteCount,
+    required this.downvoteCount,
+  });
 
-  /// Toggle Function for react Button.
-  final VoidCallback toggle;
+  /// Callback function when vote button is pressed
+  final Function(PostVoteType) onVotePress;
+  
+  /// Current upvote state
+  final bool isUpvoted;
+  
+  /// Current downvote state
+  final bool isDownvoted;
 
-  @override
-  State<MultiReactButton> createState() => _MultiReactionButtonState();
-}
+  /// Number of upvotes
+  final int upvoteCount;
 
-class _MultiReactionButtonState extends State<MultiReactButton> {
+  /// Number of downvotes
+  final int downvoteCount;
+
   @override
   Widget build(BuildContext context) {
-    return ReactionButton(
-      itemSize: const Size.square(35),
-      onReactionChanged: (value) {
-        // ignore: unnecessary_statements
-        widget.toggle();
-      },
-      selectedReaction: Reaction(
-        icon: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: (MediaQuery.sizeOf(context).width / 392) * 35,
-            width: (MediaQuery.sizeOf(context).width / 392) * 35,
-            child: SvgPicture.asset(
-              'assets/images/icon_like_.svg',
-            ),
-          ),
-        ),
-        value: 12,
-      ),
-      reactions: [
-        Reaction(
-          icon: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: (MediaQuery.sizeOf(context).width / 392) * 35,
-              width: (MediaQuery.sizeOf(context).width / 392) * 35,
-              child: SvgPicture.asset(
-                'assets/icons/angel.svg',
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Enhanced Upvote section
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () => onVotePress(PostVoteType.up_vote),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isUpvoted ? Icons.arrow_circle_up : Icons.arrow_circle_up_outlined,
+                    color: isUpvoted ? Colors.green : Colors.grey,
+                    size: 24,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    upvoteCount.toString(),
+                    style: TextStyle(
+                      color: isUpvoted ? Colors.green : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          value: 1,
         ),
-        Reaction(
-          icon: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: (MediaQuery.sizeOf(context).width / 392) * 35,
-              width: (MediaQuery.sizeOf(context).width / 392) * 35,
-              child: SvgPicture.asset(
-                'assets/icons/happy.svg',
+        const SizedBox(width: 16),
+        // Enhanced Downvote section
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () => onVotePress(PostVoteType.down_vote),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isDownvoted ? Icons.arrow_circle_down : Icons.arrow_circle_down_outlined,
+                    color: isDownvoted ? Colors.red : Colors.grey,
+                    size: 24,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    downvoteCount.toString(),
+                    style: TextStyle(
+                      color: isDownvoted ? Colors.red : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          value: 3,
-        ),
-        Reaction(
-          icon: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: (MediaQuery.sizeOf(context).width / 392) * 35,
-              width: (MediaQuery.sizeOf(context).width / 392) * 35,
-              child: SvgPicture.asset(
-                'assets/icons/laugh.svg',
-              ),
-            ),
-          ),
-          value: 4,
-        ),
-        Reaction(
-          icon: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: (MediaQuery.sizeOf(context).width / 392) * 35,
-              width: (MediaQuery.sizeOf(context).width / 392) * 35,
-              child: SvgPicture.asset(
-                'assets/icons/love.svg',
-              ),
-            ),
-          ),
-          value: 1,
-        ),
-        Reaction(
-          icon: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: (MediaQuery.sizeOf(context).width / 392) * 35,
-              width: (MediaQuery.sizeOf(context).width / 392) * 35,
-              child: SvgPicture.asset(
-                'assets/icons/tear.svg',
-              ),
-            ),
-          ),
-          value: 1,
-        ),
-        Reaction(
-          icon: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: (MediaQuery.sizeOf(context).width / 392) * 35,
-              width: (MediaQuery.sizeOf(context).width / 392) * 35,
-              child: SvgPicture.asset(
-                'assets/icons/angry.svg',
-              ),
-            ),
-          ),
-          value: 2,
         ),
       ],
     );

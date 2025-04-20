@@ -7,6 +7,7 @@ import 'package:talawa/view_model/main_screen_view_model.dart';
 import 'package:talawa/views/base_view.dart';
 import 'package:talawa/widgets/pinned_post.dart';
 import 'package:talawa/widgets/post_list_widget.dart';
+import 'package:talawa/widgets/post_shimmer.dart';
 
 /// OrganizationFeed returns a widget that shows the feed of the organization.
 class OrganizationFeed extends StatefulWidget {
@@ -83,9 +84,13 @@ class _OrganizationFeedState extends State<OrganizationFeed> {
               },
             ),
           ),
-          // if the model is fetching the data then renders Circular Progress Indicator else renders the result.
-          body: model.isFetchingPosts || model.isBusy
-              ? const Center(child: CircularProgressIndicator())
+          // Only show shimmer for initial load when no posts exist
+          body: model.isBusy && model.posts.isEmpty
+              ? ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: 3, // Show 3 shimmer posts while loading
+                  itemBuilder: (context, index) => const PostShimmer(),
+                )
               : RefreshIndicator(
                   onRefresh: () async => model.fetchNewPosts(),
                   child: NotificationListener<ScrollNotification>(
@@ -95,7 +100,7 @@ class _OrganizationFeedState extends State<OrganizationFeed> {
                       if (notification is ScrollEndNotification &&
                           notification.metrics.atEdge) {
                         if (firstDownScroll > 0) {
-                          model.nextPage();
+                          // model.nextPage();
                           firstDownScroll = 0;
                         } else {
                           firstDownScroll++;
@@ -105,7 +110,7 @@ class _OrganizationFeedState extends State<OrganizationFeed> {
                           notification.metrics.atEdge &&
                           currentScroll <= 0) {
                         if (firstUpScroll > 0) {
-                          model.previousPage();
+                          // model.previousPage();
                           firstUpScroll = 0;
                         } else {
                           firstUpScroll++;
@@ -126,20 +131,112 @@ class _OrganizationFeedState extends State<OrganizationFeed> {
                       children: [
                         // Always show PinnedPost if available
                         if (model.pinnedPosts.isNotEmpty)
-                          PinnedPost(
-                            key: const Key('pinnedPosts'),
-                            pinnedPost: model.pinnedPosts,
-                            model: widget.homeModel!,
+                          Column(
+                            children: [
+                              // Add a heading for pinned posts
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .strictTranslate('Pinned Posts'),
+                                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              PinnedPost(
+                                key: const Key('pinnedPosts'),
+                                pinnedPost: model.pinnedPosts,
+                                model: widget.homeModel!,
+                                onPostTap: model.navigateToIndividualPage,
+                              ),
+                              
+                              // Show Load More button for pinned posts if there are more
+                              if (model.hasMorePinnedPosts && !model.isLoadingMorePinnedPosts)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                  child: TextButton(
+                                    onPressed: () => model.loadMorePinnedPosts(),
+                                    child: Text(
+                                      AppLocalizations.of(context)!
+                                          .strictTranslate('Load More Pinned Posts'),
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              
+                              // Show loading indicator when loading more pinned posts
+                              if (model.isLoadingMorePinnedPosts)
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         SizedBox(
                           height: SizeConfig.screenHeight! * 0.01,
                         ),
                         model.posts.isNotEmpty
-                            ? PostListWidget(
-                                key: widget.homeModel?.keySHPost,
-                                posts: model.posts,
-                                function: model.navigateToIndividualPage,
-                                deletePost: model.removePost,
+                            ? Column(
+                                children: [
+                                  // Posts list
+                                  PostListWidget(
+                                    key: widget.homeModel?.keySHPost,
+                                    posts: model.posts,
+                                    function: model.navigateToIndividualPage,
+                                    deletePost: model.removePost,
+                                  ),
+                                  
+                                  // Shimmer loading effect when loading more posts
+                                  if (model.isLoadingMore)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: 2, // Show 2 shimmer items
+                                        itemBuilder: (context, index) {
+                                          return const PostShimmer();
+                                        },
+                                      ),
+                                    ),
+                                  
+                                  // Load More button
+                                  if (model.hasMorePosts && !model.isLoadingMore)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                      child: ElevatedButton(
+                                        onPressed: () => model.loadMorePosts(),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.green,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          AppLocalizations.of(context)!
+                                              .strictTranslate('Load More'),
+                                          style: const TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               )
                             : // if there is no post in an organisation then show text button to create a post.
                             Column(

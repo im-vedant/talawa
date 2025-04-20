@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:talawa/models/post/post_model.dart';
-import 'package:talawa/services/graphql_config.dart';
-import 'package:talawa/utils/app_localization.dart';
 import 'package:talawa/view_model/widgets_view_models/like_button_view_model.dart';
 import 'package:talawa/views/base_view.dart';
 import 'package:talawa/widgets/custom_avatar.dart';
 import 'package:talawa/widgets/multi_reaction.dart';
 import 'package:talawa/widgets/post_container.dart';
-import 'package:talawa/widgets/post_detailed_page.dart';
 import 'package:talawa/widgets/post_modal.dart';
 
-/// Stateless class to show the fetched post.
+/// Stateless class to show the fetched post with enhanced UI.
 class NewsPost extends StatelessWidget {
   const NewsPost({
     super.key,
@@ -29,182 +25,246 @@ class NewsPost extends StatelessWidget {
   /// To delete the post if user can (only work if the post is made by the user).
   final Function(Post)? deletePost;
 
+  /// Builds the UI for displaying image attachments of a post.
+  ///
+  /// This method filters the post's attachments to only show images,
+  /// then displays them in a vertical column. If there are no attachments
+  /// or if the post's attachments list is empty, it returns an empty widget.
+  ///
+  /// **params**:
+  /// * `context`: The build context used for rendering the attachments.
+  ///
+  /// **returns**:
+  /// * `Widget`: A Column containing the image attachments, or an empty SizedBox if no attachments exist.
+  Widget _buildAttachments(BuildContext context) {
+    if (post.attachments == null || post.attachments!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final imageAttachments = post.attachments!
+        .where((attachment) => attachment.mimeType?.startsWith('image/') ?? false)
+        .toList();
+
+    if (imageAttachments.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (imageAttachments.length == 1) {
+      // Single image layout - full width
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: PostContainer(
+            key: Key('post_image_${imageAttachments[0].objectName}'),
+            objectName: imageAttachments[0].objectName,
+            organizationId: post.organization!.id!,
+          ),
+        ),
+      );
+    } else if (imageAttachments.length == 2) {
+      // Two images side by side
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Row(
+          children: imageAttachments.map((attachment) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: PostContainer(
+                    key: Key('post_image_${attachment.objectName}'),
+                    objectName: attachment.objectName,
+                    organizationId: post.organization!.id!,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    } else {
+      // Grid layout for multiple images
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 3,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          children: imageAttachments.map((attachment) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: PostContainer(
+                key: Key('post_image_${attachment.objectName}'),
+                objectName: attachment.objectName,
+                organizationId: post.organization!.id!,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Card(
-        elevation: 5,
+        elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
         ),
         surfaceTintColor: Theme.of(context).colorScheme.secondaryContainer,
         color: Theme.of(context).colorScheme.tertiaryContainer,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              leading: CustomAvatar(
-                isImageNull: post.creator!.image == null,
-                firstAlphabet:
-                    post.creator!.firstName!.substring(0, 1).toUpperCase(),
-                imageUrl:
-                    "${'${GraphqlConfig.orgURI}'.replaceFirst('/graphql', '')}/${post.creator!.image}",
-                fontSize: 20,
-              ),
-              title: Text(
-                "${post.creator!.firstName} ${post.creator!.lastName}",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-              ),
-              trailing: IconButton(
-                key: const Key('reportButton'),
-                onPressed: () => showModalBottomSheet<void>(
-                  context: context,
-                  builder: (BuildContext context1) => Container(
-                    key: const Key('reportPost'),
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(16),
-                        topLeft: Radius.circular(16),
-                      ),
-                    ),
-                    child: PostBottomModal(
-                      post: post,
-                      deletePost: deletePost,
-                      function: function,
-                    ),
-                  ),
-                ),
-                icon: Icon(
-                  Icons.report_gmailerrorred_outlined,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-              ),
-            ),
-            // post.imageUrl != null
-            //     ? Container(
-            //         key: const Key('postParentContainer'),
-            //         height: 340,
-            //         color: Colors.white,
-            //         // child: PostContainer(photoUrl: post.imageUrl),
-            //       )
-            //     : DescriptionTextWidget(text: post.caption!),
-            BaseView<LikeButtonViewModel>(
-              onModelReady: (model) {
-                // model.initialize(post.likedBy ?? [], post.sId);
-              },
-              builder: (context, model, child) => Column(
+            // Enhanced Header with user info
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+              child: Row(
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  // Avatar with enhanced size
+                  CustomAvatar(
+                    isImageNull: post.creator!.avatarURL == null,
+                    firstAlphabet: post.creator!.firstName!.substring(0, 1).toUpperCase(),
+                    fontSize: 22,
+                    maxRadius: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  // User info with timestamp
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          child: Column(
-                            children: [
-                              MultiReactButton(
-                                toggle: () => model.toggleIsLiked(),
-                              ),
-                              // Text(
-                              //   "${model.likedBy.length}",
-                              //   style: TextStyle(
-                              //     fontFamily: 'open-sans',
-                              //     color:
-                              //         Theme.of(context).colorScheme.onSecondary,
-                              //   ),
-                              // ),
-                            ],
+                        Text(
+                          "${post.creator!.firstName} ${post.creator!.lastName}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSecondary,
                           ),
                         ),
-                        Container(
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                key: const Key('commentButton'),
-                                onTap: () => function?.call(post),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: (MediaQuery.sizeOf(context).width /
-                                            392) *
-                                        35,
-                                    width: (MediaQuery.sizeOf(context).width /
-                                            392) *
-                                        35,
-                                    child: SvgPicture.asset(
-                                      'assets/images/comment.svg',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                "${post.caption!.length}",
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.onSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(120, 0, 0, 0),
-                          child: Text(
-                            '    ${post.getPostCreatedDuration()}',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSecondary,
-                              fontSize: 12,
-                            ),
+                        const SizedBox(height: 2),
+                        Text(
+                          post.getPostCreatedDuration(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.onSecondary.withOpacity(0.7),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () => function?.call(post),
-                          child: Text(
-                            "${AppLocalizations.of(context)!.strictTranslate("Liked")} by ...",
-                            style: TextStyle(
-                              fontFamily: 'open-sans',
-                              color: Theme.of(context).colorScheme.onSecondary,
+                  // Menu button with more obvious tap area
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(50),
+                      onTap: () => showModalBottomSheet<void>(
+                        context: context,
+                        builder: (BuildContext context1) => Container(
+                          key: const Key('reportPost'),
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(16),
+                              topLeft: Radius.circular(16),
                             ),
                           ),
+                          child: PostBottomModal(
+                            post: post,
+                            deletePost: deletePost,
+                            function: function,
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 5,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // if (post.imageUrl != null)
-                        //   DescriptionTextWidget(text: post.description!),
-                      ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.more_vert,
+                          key: const Key('reportButton'),
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+
+            // Post caption with improved typography
+            if (post.caption != null && post.caption!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 12.0),
+                child: Text(
+                  post.caption!,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.3,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                ),
+              ),
+
+            // Improved attachments display
+            _buildAttachments(context),
+
+            // Enhanced engagement section
+            BaseView<LikeButtonViewModel>(
+              onModelReady: (model) => model.initialize(post),
+              builder: (context, model, child) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    // Like button with improved spacing
+                    MultiReactButton(
+                      onVotePress: (voteType) => model.toggleVote(voteType),
+                      isUpvoted: model.isUpvoted,
+                      isDownvoted: model.isDownvoted,
+                      upvoteCount: model.upVoteCount,
+                      downvoteCount: model.downVoteCount,
+                    ),
+                    const SizedBox(width: 24),
+                    
+                    // Comment button with improved interaction area
+                    InkWell(
+                      onTap: () => function?.call(post),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric( horizontal: 4.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.comment_outlined,
+                              color: Colors.grey,
+                              size: 24,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              "${post.commentsCount}",
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Bottom spacing
+            const SizedBox(height: 8),
           ],
         ),
       ),

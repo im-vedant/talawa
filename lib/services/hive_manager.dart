@@ -8,6 +8,7 @@ import 'package:talawa/models/caching/cached_user_action.dart';
 import 'package:talawa/models/comment/comment_model.dart';
 import 'package:talawa/models/events/event_model.dart';
 import 'package:talawa/models/organization/org_info.dart';
+import 'package:talawa/models/pageinfo/pageinfo_model.dart';
 import 'package:talawa/models/post/post_model.dart';
 import 'package:talawa/models/user/user_info.dart';
 
@@ -102,10 +103,14 @@ class HiveManager {
     registerAdapter<CachedUserActionStatus>(CachedUserActionStatusAdapter());
     registerAdapter<Post>(PostAdapter());
     registerAdapter<Event>(EventAdapter());
-    // registerAdapter<LikedBy>(LikedByAdapter());
+    registerAdapter<PostAttachment>(PostAttachmentAdapter());
+    registerAdapter<PostDownVotersConnection>(PostDownVotersConnectionAdapter());
+    registerAdapter<PostUpVotersConnection>(PostUpVotersConnectionAdapter());
+    registerAdapter<PostUpVotersConnectionEdge>(PostUpVotersConnectionEdgeAdapter());
+    registerAdapter<PostDownVotersConnectionEdge>(PostDownVotersConnectionEdgeAdapter());
+    registerAdapter<PageInfo>(PageInfoAdapter());
     registerAdapter<Attendee>(AttendeeAdapter());
     registerAdapter<Comment>(CommentAdapter());
-    // registerAdapter<Comments>(CommentsAdapter());
   }
 
   /// Opens the necessary Hive boxes for storing various types of data.

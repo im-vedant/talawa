@@ -13,6 +13,7 @@ import 'package:talawa/services/graphql_config.dart';
 import 'package:talawa/services/image_service.dart';
 import 'package:talawa/services/navigation_service.dart';
 import 'package:talawa/services/org_service.dart';
+import 'package:talawa/services/pinned_post_service.dart';
 import 'package:talawa/services/post_service.dart';
 import 'package:talawa/services/session_manager.dart';
 import 'package:talawa/services/size_config.dart';
@@ -50,6 +51,7 @@ import 'package:talawa/view_model/widgets_view_models/comments_view_model.dart';
 import 'package:talawa/view_model/widgets_view_models/custom_drawer_view_model.dart';
 import 'package:talawa/view_model/widgets_view_models/like_button_view_model.dart';
 import 'package:talawa/view_model/widgets_view_models/progress_dialog_view_model.dart';
+import 'package:talawa/view_model/widgets_view_models/votes_view_model.dart';
 
 // Instance of GetIt and storing it in a global variable
 /// Intializaing the locator.
@@ -126,6 +128,7 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => EventService());
   locator.registerLazySingleton(() => CommentService());
   locator.registerLazySingleton(() => OrganizationService());
+  locator.registerLazySingleton(() => PinnedPostService());
   locator.registerLazySingleton(() => MultiMediaPickerService());
   locator.registerLazySingleton(() => Connectivity());
   locator.registerLazySingleton(() => ChatService());
@@ -172,6 +175,7 @@ Future<void> setupLocator() async {
   locator.registerFactory(() => ProgressDialogViewModel());
   locator.registerFactory(() => CustomDrawerViewModel());
   locator.registerFactory(() => LikeButtonViewModel());
+  locator.registerFactory(() => VotesViewModel());
   locator.registerFactory(() => AppLanguage());
   locator.registerFactory(() => CommentsViewModel());
   locator.registerFactory(() => AppTheme());

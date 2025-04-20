@@ -59,6 +59,18 @@ class _AddPostState extends State<AddPost> {
           TextButton(
             key: const Key('add_post_text_btn1'),
             onPressed: () async {
+              print("somdflaslkdfjasklfl");
+              print(model.controller.text.isEmpty);
+              print(model.imageFile == null);
+              if (model.controller.text.isEmpty || model.imageFile == null) {
+                navigationService.showTalawaErrorDialog(
+                  AppLocalizations.of(context)!.strictTranslate(
+                    "Please add a caption or an image before posting.",
+                  ),
+                  MessageType.error,
+                );
+                return;
+              }
               await model.uploadPost();
               navigationService.pop();
             },

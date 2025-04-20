@@ -4,43 +4,58 @@ import 'package:talawa/models/user/user_info.dart';
 part 'comment_model.g.dart';
 
 ///This class returns a Comment instance.
-@HiveType(typeId: 12)
+/// Represents a comment on a post.
+@HiveType(typeId: 16)
 class Comment {
-  Comment({this.text, this.createdAt, this.creator, this.post, this.likeCount});
-  //Creating a new Comment instance from a map structure.
+  /// Creates a new PostComment instance.
+  Comment({
+    required this.id,
+    required this.body,
+    required this.createdAt,
+    required this.creator,
+    this.updatedAt,
+    this.upVotesCount = 0,
+    this.downVotesCount = 0,
+  });
+
+  /// Creates a PostComment from JSON data.
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
-      text: json['text'] as String?,
-      createdAt: json['createdAt'] as String?,
-      creator: json['creator'] == null
-          ? null
-          //Creating a new User instance from a map structure.
-          : User.fromJson(
-              json['creator'] as Map<String, dynamic>,
-              fromOrg: true,
-            ),
-      post: json['post'] as String?,
-      likeCount: json['likeCount'] as String?,
+      id: json['id'] as String,
+      body: json['body'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      creator: User.fromJson(json['creator'] as Map<String, dynamic>),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : null,
+      upVotesCount: json['upVotesCount'] as int? ?? 0,
+      downVotesCount: json['downVotesCount'] as int? ?? 0,
     );
   }
 
-  /// The text of the comment.
+  /// Unique identifier for the comment.
   @HiveField(0)
-  String? text;
+  final String id;
 
-  /// The creation date of the comment.
+  /// The text content of the comment.
   @HiveField(1)
-  String? createdAt;
+  final String body;
 
-  /// The creator of the comment.
+  /// When the comment was created.
   @HiveField(2)
-  User? creator;
+  final DateTime createdAt;
 
-  /// The post associated with the comment.
+  /// When the comment was last updated.
   @HiveField(3)
-  String? post;
+  final DateTime? updatedAt;
 
-  /// The like count of the comment.
+  /// The user who created the comment.
   @HiveField(4)
-  String? likeCount;
+  final User creator;
+
+  /// Number of upvotes the comment has received.
+  @HiveField(5)
+  final int upVotesCount;
+
+  /// Number of downvotes the comment has received.
+  @HiveField(6)
+  final int downVotesCount;
 }

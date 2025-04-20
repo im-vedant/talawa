@@ -150,9 +150,10 @@ class LoginViewModel extends BaseModel {
         onValidResult: (result) async {
           // if user found.
           if (result.data != null) {
-            final User loggedInUser = User.fromJson(
-              result.data!['signIn'] as Map<String, dynamic>,
+             User loggedInUser = User.fromJson(
+              result.data!['signIn']['user'] as Map<String, dynamic>,
             );
+            loggedInUser.authToken = result.data!['signIn']['authenticationToken'] as String?;
             userConfig.updateUser(loggedInUser);
           }
         },

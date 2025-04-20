@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:talawa/enums/enums.dart';
 import 'package:talawa/locator.dart';
@@ -18,24 +19,19 @@ class CommentService {
   late DataBaseMutationFunctions _dbFunctions;
   late NavigationService _navigationService;
 
-  /// This function is used to add comment on the post.
+  /// Creates a new comment on a post.
   ///
-  /// To verify things are working, check out the native platform logs.
-  /// **params**:
-  /// * `postId`: The post id on which comment is to be added.
-  /// * `text`: The comment text.
+  /// @param postId The post id on which comment is to be added
+  /// @param body The comment text to be added
   ///
-  /// **returns**:
-  ///   None
-  Future<void> createComments(String postId, String text) async {
-    final String createCommentQuery = CommentQueries().createComment();
-
-    try {
-      await _dbFunctions.gqlAuthMutation(
+  /// This function will show a success or error message using a snackbar.
+  Future<QueryResult<Object?>> createComments(String postId, String body) async {
+    final String createCommentQuery = CommentQueries().createCommentMutation();
+      final result=await _dbFunctions.gqlAuthMutation(
         createCommentQuery,
         variables: {
-          'postId': postId, //Add your variables here
-          'text': text,
+          'postId': postId,
+          'body': body,
         },
       );
 
@@ -43,36 +39,34 @@ class CommentService {
         "Comment sent",
         MessageType.info,
       );
-    } on Exception catch (_) {
-      _navigationService.showTalawaErrorSnackBar(
-        "Something went wrong",
-        MessageType.error,
-      );
-    }
+      return result;
   }
 
   /// This function is used to get all comments on the post.
   ///
-  /// To verify things are working, check out the native platform logs.
-  /// **params**:
-  /// * `postId`: The post id for which comments are to be fetched.
-  ///
-  /// **returns**:
-  /// * `Future<List<dynamic>>`: promise that will be fulfilled with list of comments.
-  ///
-  Future<List<dynamic>> getCommentsForPost(String postId) async {
-    final String getCommmentQuery = CommentQueries().getPostsComments(postId);
+  /// Gets all comments for a specific post with pagination support.
+  /// 
+  /// @param postId ID of the post to fetch comments for
+  /// @param after Cursor for pagination, to fetch comments after this cursor
+  /// @param first Number of comments to fetch (optional)
+  Future<Map<String, dynamic>?> getCommentsForPost(
+    String postId, {
+    String? after,
+    int first = 3,
+  }) async {
+    final String getCommmentQuery = CommentQueries().getPostsComments(
+      postId,
+      after: after,
+      first: first,
+    );
 
     final QueryResult<Object?> result =
-        await _dbFunctions.gqlAuthMutation(getCommmentQuery);
+        await _dbFunctions.gqlAuthQuery(getCommmentQuery);
 
     if (result.data == null) {
-      return [];
+      return null;
     }
-    final resultData = result.data;
 
-    final resultDataPostComments = (resultData?['post']
-        as Map<String, dynamic>)['comments'] as List<dynamic>;
-    return resultDataPostComments;
+    return result.data!['post']['comments'] as Map<String, dynamic>;
   }
 }
